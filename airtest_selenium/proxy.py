@@ -2,9 +2,8 @@
 
 from selenium.webdriver import Chrome
 from selenium.webdriver.remote.webelement import WebElement
-from airtest.utils.logwraper import Logwrap
 from airtest.core.settings import Settings as ST
-from airtest.core.helper import logwrap, log_in_func
+from airtest.core.helper import logwrap
 import os
 import time
 import sys
@@ -58,44 +57,44 @@ class WebChrome(Chrome):
         try:
             func(path)
         except Exception as e:
-            log_in_func({"args": ": element not find!"})
             return False
         return True
 
     @logwrap
     def get(self, address):
         super(WebChrome, self).get(address)
-        log_in_func({"args": address})
         time.sleep(2)
 
     @logwrap
     def back(self):
         super(WebChrome, self).back()
-        log_in_func({"args": ""})
         time.sleep(1)
 
     @logwrap
     def forward(self):
         super(WebChrome, self).forward()
-        log_in_func({"args": ""})
         time.sleep(1)
 
+    @logwrap
     def gen_screen_log(self, element):
+        if ST.LOG_DIR is None:
+            return None
         size = element.size
         location = element.location
         x = size['width'] / 2 + location['x']
         y = size['height'] / 2 + location['y']
         jpg_file_name = str(int(time.time())) + '.jpg'
-        try:
-            jpg_path = os.path.join(ST.LOG_DIR, jpg_file_name)
-            self.save_screenshot(jpg_path)
-            if "darwin" in sys.platform:
-                x, y = x * 2, y * 2
-            extra_data ={"args": [[x, y]], "screen": jpg_file_name}
-            log_in_func(extra_data)
-        except Exception:
-            import traceback
-            traceback.print_exc()
+        jpg_path = os.path.join(ST.LOG_DIR, jpg_file_name)
+        self.save_screenshot(jpg_path)
+        if "darwin" in sys.platform:
+            x, y = x * 2, y * 2
+        saved = {"pos": [[x, y]], "screen": jpg_file_name}
+        return saved
+
+    def to_json(self):
+        # add this method for json encoder in logwrap
+        return repr(self)
+
 
 class Element(WebElement):
 
@@ -109,7 +108,6 @@ class Element(WebElement):
 
     @logwrap
     def send_keys(self, text, keyborad=None):
-        log_in_func({"func_args": text})
         if keyborad:
             super(Element, self).send_keys(text, keyborad)
         else:
@@ -118,10 +116,5 @@ class Element(WebElement):
 
     @logwrap
     def assert_text(self, text):
-        log_in_func({"func_args": text})
         assert text in self.text.encode("utf-8")
         time.sleep(0.5)
-
-
-
-

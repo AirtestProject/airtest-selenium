@@ -1,1 +1,2 @@
-from .ext_report import SeleniumReport as Report
+from .proxy import WebChrome, Element
+from .report import SeleniumReport

@@ -1,7 +1,20 @@
 # -*- coding: utf-8 -*-
 import os
+import airtest
+import airtest.report.report as report
 
 LOGDIR = "log"
+
+old_trans = report.LogToHtml._translate_screen
+
+def new_trans(self, step, code):
+    trans = old_trans(self, step, code)
+    if step["name"] == "WebChrome":
+        return "xxx"
+    else:
+        return trans
+
+report.LogToHtml._translate_screen = new_trans
 
 
 class SeleniumReport(object):
