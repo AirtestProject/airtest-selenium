@@ -1,0 +1,1 @@
+from .ext_report import SeleniumReport as Report
