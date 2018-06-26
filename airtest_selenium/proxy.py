@@ -22,29 +22,35 @@ class WebChrome(Chrome):
     @logwrap
     def find_element_by_xpath(self, xpath):
         web_element = super(WebChrome, self).find_element_by_xpath(xpath)
-        self.gen_screen_log(web_element)
-        return Element(web_element)
+        log_res = self._gen_screen_log(web_element)
+        return Element(web_element, log_res)
 
+    @logwrap
     def find_element_by_id(self, id):
         web_element = super(WebChrome, self).find_element_by_id(id)
-        self.gen_screen_log(web_element)
-        return Element(web_element)
+        log_res = self._gen_screen_log(web_element)
+        return Element(web_element, log_res)
 
+    @logwrap
     def find_element_by_name(self, name):
         web_element = super(WebChrome, self).find_element_by_name(name)
-        self.gen_screen_log(web_element)
-        return Element(web_element)
+        log_res = self._gen_screen_log(web_element)
+        return Element(web_element, log_res)
 
+    @logwrap
     def switch_to_latest_window(self):
         _father = self.number
         self.number = len(self.window_handles) - 1
         self.father_number[self.number] = _father
         self.switch_to_window(self.window_handles[self.number])
+        self._gen_screen_log()
         time.sleep(0.5)
 
+    @logwrap
     def switch_to_last_window(self):
         self.number = self.father_number[self.number]
         self.switch_to_window(self.window_handles[self.number])
+        self._gen_screen_log()
         time.sleep(0.5)
 
     @logwrap
@@ -68,27 +74,35 @@ class WebChrome(Chrome):
     @logwrap
     def back(self):
         super(WebChrome, self).back()
+        self._gen_screen_log()
         time.sleep(1)
 
     @logwrap
     def forward(self):
         super(WebChrome, self).forward()
+        self._gen_screen_log()
         time.sleep(1)
 
     @logwrap
-    def gen_screen_log(self, element):
+    def snapshot(self):
+        self._gen_screen_log()
+
+    @logwrap
+    def _gen_screen_log(self, element=None):
         if ST.LOG_DIR is None:
             return None
-        size = element.size
-        location = element.location
-        x = size['width'] / 2 + location['x']
-        y = size['height'] / 2 + location['y']
         jpg_file_name = str(int(time.time())) + '.jpg'
         jpg_path = os.path.join(ST.LOG_DIR, jpg_file_name)
         self.save_screenshot(jpg_path)
-        if "darwin" in sys.platform:
-            x, y = x * 2, y * 2
-        saved = {"pos": [[x, y]], "screen": jpg_file_name}
+        saved = {"screen": jpg_file_name}
+        if element:
+            size = element.size
+            location = element.location
+            x = size['width'] / 2 + location['x']
+            y = size['height'] / 2 + location['y']
+            if "darwin" in sys.platform:
+                x, y = x * 2, y * 2
+            saved.update({"pos": [[x, y]],})
         return saved
 
     def to_json(self):
@@ -98,23 +112,19 @@ class WebChrome(Chrome):
 
 class Element(WebElement):
 
-    def __init__(self, _obj):
+    def __init__(self, _obj, log):
         super(Element, self).__init__(parent=_obj._parent, id_=_obj._id, w3c=_obj._w3c)
+        self.res_log = log
 
-    @logwrap
     def click(self):
         super(Element, self).click()
         time.sleep(0.5)
+        return self.res_log
 
-    @logwrap
     def send_keys(self, text, keyborad=None):
         if keyborad:
             super(Element, self).send_keys(text, keyborad)
         else:
             super(Element, self).send_keys(text)
         time.sleep(0.5)
-
-    @logwrap
-    def assert_text(self, text):
-        assert text in self.text.encode("utf-8")
-        time.sleep(0.5)
+        return self.res_log
