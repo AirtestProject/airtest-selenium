@@ -6,10 +6,12 @@ LOGDIR = "log"
 
 old_trans_screen = report.LogToHtml._translate_screen
 old_trans_desc = report.LogToHtml._translate_desc
+old_trans_code = report.LogToHtml._translate_code
 
 screen_func = ["find_element_by_xpath", "find_element_by_id", "find_element_by_name", "assert_exist",
                "back", "forward", "switch_to_last_window", "switch_to_latest_window", "get",
                "click", "send_keys"]
+
 second_screen_func = ["click", "send_keys"]
 other_func = []
 
@@ -86,9 +88,18 @@ def new_translate_desc(self, step, code):
     else:
         return trans
 
+def new_translate_code(self, step):
+    trans = old_trans_code(self, step)
+    print("this is args*************************************", trans)
+    for idx, item in enumerate(trans["args"]):
+        if item["key"] == "self":
+            trans["args"].pop(idx)
+    return trans
+
 
 report.LogToHtml._translate_screen = new_trans_screen
 report.LogToHtml._translate_desc = new_translate_desc
+report.LogToHtml._translate_code = new_translate_code
 
 
 class SeleniumReport(object):

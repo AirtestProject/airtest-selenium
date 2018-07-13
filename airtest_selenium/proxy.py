@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from selenium.webdriver import Chrome
+from selenium.webdriver import Chrome, ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 from airtest.core.settings import Settings as ST
 from airtest.core.helper import logwrap
+from airtest import aircv
+from airtest.core.cv import Template
+from airtest_selenium.utils.airtest_api import loop_find
+from airtest_selenium.exceptions import IsNotTemplateError
+from airtest.aircv import get_resolution
+from pynput.mouse import Controller, Button
+from airtest.core.error import TargetNotFoundError
 import os
 import time
 import sys
@@ -16,7 +23,9 @@ class WebChrome(Chrome):
             os.environ['PATH'] += ":/Applications/AirtestIDE.app/Contents/Resources/selenium_plugin"
         super(WebChrome, self).__init__(chrome_options=chrome_options)
         self.father_number = {0: 0}
+        self.action_chains = ActionChains(self)
         self.number = 0
+        self.mouse = Controller()
         self.operation_to_func = {"xpath": self.find_element_by_xpath, "id": self.find_element_by_id, "name": self.find_element_by_name}
 
     @logwrap
@@ -38,20 +47,46 @@ class WebChrome(Chrome):
         return Element(web_element, log_res)
 
     @logwrap
-    def switch_to_latest_window(self):
+    def switch_to_new_tab(self):
         _father = self.number
         self.number = len(self.window_handles) - 1
         self.father_number[self.number] = _father
-        self.switch_to_window(self.window_handles[self.number])
+        self.switch_to.window(self.window_handles[self.number])
         self._gen_screen_log()
         time.sleep(0.5)
 
     @logwrap
-    def switch_to_last_window(self):
+    def switch_to_previous_tab(self):
         self.number = self.father_number[self.number]
-        self.switch_to_window(self.window_handles[self.number])
+        self.switch_to.window(self.window_handles[self.number])
         self._gen_screen_log()
         time.sleep(0.5)
+
+    @logwrap
+    def airtest_touch(self, v):
+        if isinstance(v, Template):
+            pos = loop_find(v, timeout=ST.FIND_TIMEOUT, driver=self)
+        else:
+            pos = v
+        x, y = pos
+        # self.action_chains.move_to_element_with_offset(root_element, x, y)
+        # self.action_chains.click()
+        pos = self._get_left_up_offset()
+        pos = (pos[0] + x, pos[1] + y)
+        self._move_to_pos(pos)
+        self._click_current_pos()
+        time.sleep(1)
+
+    def assert_template(self, v):
+        if isinstance(v, Template):
+            try:
+                pos = loop_find(v, timeout=ST.FIND_TIMEOUT, driver=self)
+            except TargetNotFoundError:
+                return False
+            else:
+                return True
+        else:
+            raise IsNotTemplateError("args is not a template")
 
     @logwrap
     def assert_exist(self, path, operation):
@@ -93,7 +128,7 @@ class WebChrome(Chrome):
             return None
         jpg_file_name = str(int(time.time())) + '.jpg'
         jpg_path = os.path.join(ST.LOG_DIR, jpg_file_name)
-        self.save_screenshot(jpg_path)
+        self.screenshot(jpg_path)
         saved = {"screen": jpg_file_name}
         if element:
             size = element.size
@@ -104,6 +139,31 @@ class WebChrome(Chrome):
                 x, y = x * 2, y * 2
             saved.update({"pos": [[x, y]],})
         return saved
+
+    def screenshot(self, file_path=None):
+        if file_path:
+            self.save_screenshot(file_path)
+        else:
+            file_path = os.path.join(ST.LOG_DIR, "temp.jpg")
+            self.save_screenshot(file_path)
+            screen = aircv.imread(file_path)
+            return screen
+
+    def _get_left_up_offset(self):
+        window_pos = self.get_window_position()
+        window_size = self.get_window_size()
+        mouse = Controller()
+        screen = self.screenshot()
+        screen_size = get_resolution(screen)
+        offset = window_size["width"] - screen_size[0], window_size["height"] - screen_size[1]
+        pos = (int(offset[0] / 2 + window_pos['x']), int(offset[1] + window_pos['y'] - offset[0] / 2))
+        return pos
+
+    def _move_to_pos(self, pos):
+        self.mouse.position = pos
+
+    def _click_current_pos(self):
+        self.mouse.click(Button.left, 1)
 
     def to_json(self):
         # add this method for json encoder in logwrap
