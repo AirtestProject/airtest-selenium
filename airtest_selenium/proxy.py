@@ -2,6 +2,7 @@
 
 from selenium.webdriver import Chrome, ActionChains
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import NoSuchElementException
 from airtest.core.settings import Settings as ST
 from airtest.core.helper import logwrap
 from airtest import aircv
@@ -28,21 +29,38 @@ class WebChrome(Chrome):
         self.mouse = Controller()
         self.operation_to_func = {"xpath": self.find_element_by_xpath, "id": self.find_element_by_id, "name": self.find_element_by_name}
 
+    def loop_find_element(self, func, text, timeout=10, interval=0.5):
+        start_time = time.time()
+        while True:
+            try:
+                element = func(text)
+            except NoSuchElementException:
+                print("Element not found!")
+                # 超时则raise，未超时则进行下次循环:
+                if (time.time() - start_time) > timeout:
+                    # try_log_screen(screen)
+                    raise NoSuchElementException('Element %s not found in screen' % text)
+                else:
+                    time.sleep(interval)
+            else:
+                return element
+
     @logwrap
     def find_element_by_xpath(self, xpath):
-        web_element = super(WebChrome, self).find_element_by_xpath(xpath)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_xpath, xpath)
+        # web_element = super(WebChrome, self).find_element_by_xpath(xpath)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
     @logwrap
     def find_element_by_id(self, id):
-        web_element = super(WebChrome, self).find_element_by_id(id)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_id, id)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
     @logwrap
     def find_element_by_name(self, name):
-        web_element = super(WebChrome, self).find_element_by_name(name)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_name, name)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -77,12 +95,13 @@ class WebChrome(Chrome):
         self._click_current_pos()
         time.sleep(1)
 
+    @logwrap
     def assert_template(self, v):
         if isinstance(v, Template):
             try:
                 pos = loop_find(v, timeout=ST.FIND_TIMEOUT, driver=self)
             except TargetNotFoundError:
-                return False
+                raise TargetNotFoundError("Target template not found on screen")
             else:
                 return True
         else:
