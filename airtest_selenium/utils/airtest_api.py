@@ -28,7 +28,7 @@ def loop_find(query, driver=None, timeout=10, threshold=None, interval=0.5, inte
         been found in screenshot
 
     """
-    threshold = 0.5
+    threshold = 0.6
     start_time = time.time()
     while True:
         screen = driver.screenshot()
