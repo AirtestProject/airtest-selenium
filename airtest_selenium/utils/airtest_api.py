@@ -32,8 +32,6 @@ def loop_find(query, driver=None, timeout=10, threshold=None, interval=0.5, inte
     start_time = time.time()
     while True:
         screen = driver.screenshot()
-        # print("template resolution +++++++++++++", query.resolution)
-        # print("test screen resolution: +++++++", get_resolution(screen))
         query.resolution = get_resolution(screen)
         if screen is None:
             print("Screen is None, may be locked")

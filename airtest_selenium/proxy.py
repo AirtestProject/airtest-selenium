@@ -19,10 +19,15 @@ import sys
 
 class WebChrome(Chrome):
 
-    def __init__(self, chrome_options=None):
+    def __init__(self, executable_path="chromedriver", port=0,
+                 options=None, service_args=None,
+                 desired_capabilities=None, service_log_path=None,
+                 chrome_options=None):
         if "darwin" in sys.platform:
             os.environ['PATH'] += ":/Applications/AirtestIDE.app/Contents/Resources/selenium_plugin"
-        super(WebChrome, self).__init__(chrome_options=chrome_options)
+        super(WebChrome, self).__init__(chrome_options=chrome_options, executable_path=executable_path,
+                                        port=port, options=options, service_args=service_args,
+                                        service_log_path=service_log_path, desired_capabilities=desired_capabilities)
         self.father_number = {0: 0}
         self.action_chains = ActionChains(self)
         self.number = 0
@@ -30,6 +35,17 @@ class WebChrome(Chrome):
         self.operation_to_func = {"xpath": self.find_element_by_xpath, "id": self.find_element_by_id, "name": self.find_element_by_name}
 
     def loop_find_element(self, func, text, timeout=10, interval=0.5):
+        """
+        Loop to find the target web element by func.
+
+        Args:
+            func: function to find element
+            text: param of function
+            timeout: time to find the element
+            interval: interval between operation
+        Returns:
+            element that been found
+        """
         start_time = time.time()
         while True:
             try:
@@ -47,6 +63,14 @@ class WebChrome(Chrome):
 
     @logwrap
     def find_element_by_xpath(self, xpath):
+        """
+        Find the web element by xpath.
+
+        Args:
+            xpath: find the element by xpath.
+        Returns:
+            Web element of current page.
+        """
         web_element = self.loop_find_element(super(WebChrome, self).find_element_by_xpath, xpath)
         # web_element = super(WebChrome, self).find_element_by_xpath(xpath)
         log_res = self._gen_screen_log(web_element)
@@ -54,18 +78,37 @@ class WebChrome(Chrome):
 
     @logwrap
     def find_element_by_id(self, id):
+        """
+        Find the web element by id.
+
+        Args:
+            id: find the element by attribute id.
+        Returns:
+            Web element of current page.
+        """
         web_element = self.loop_find_element(super(WebChrome, self).find_element_by_id, id)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
     @logwrap
     def find_element_by_name(self, name):
+        """
+        Find the web element by name.
+
+        Args:
+            name: find the element by attribute name.
+        Returns:
+            Web element of current page.
+        """
         web_element = self.loop_find_element(super(WebChrome, self).find_element_by_name, name)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
     @logwrap
     def switch_to_new_tab(self):
+        """
+        Switch to the new tab.
+        """
         _father = self.number
         self.number = len(self.window_handles) - 1
         self.father_number[self.number] = _father
@@ -75,6 +118,9 @@ class WebChrome(Chrome):
 
     @logwrap
     def switch_to_previous_tab(self):
+        """
+        Switch to the previous tab(which to open current tab).
+        """
         self.number = self.father_number[self.number]
         self.switch_to.window(self.window_handles[self.number])
         self._gen_screen_log()
@@ -82,11 +128,19 @@ class WebChrome(Chrome):
 
     @logwrap
     def airtest_touch(self, v):
+        """
+        Perform the touch action on the current page by image identification.
+
+        Args:
+            v: target to touch, either a Template instance or absolute coordinates (x, y)
+        Returns:
+            Finial position to be clicked.
+        """
         if isinstance(v, Template):
-            pos = loop_find(v, timeout=ST.FIND_TIMEOUT, driver=self)
+            _pos = loop_find(v, timeout=ST.FIND_TIMEOUT, driver=self)
         else:
-            pos = v
-        x, y = pos
+            _pos = v
+        x, y = _pos
         # self.action_chains.move_to_element_with_offset(root_element, x, y)
         # self.action_chains.click()
         pos = self._get_left_up_offset()
@@ -94,59 +148,93 @@ class WebChrome(Chrome):
         self._move_to_pos(pos)
         self._click_current_pos()
         time.sleep(1)
+        return _pos
 
     @logwrap
     def assert_template(self, v):
+        """
+        Assert target exists on the current page.
+
+        Args:
+            v: target to touch, either a Template instance
+        Raise:
+            AssertionError - if target not found.
+        Returns:
+            Position of the template.
+        """
         if isinstance(v, Template):
             try:
                 pos = loop_find(v, timeout=ST.FIND_TIMEOUT, driver=self)
             except TargetNotFoundError:
-                raise TargetNotFoundError("Target template not found on screen")
+                raise AssertionError("Target template not found on screen.")
             else:
-                return True
+                return pos
         else:
             raise IsNotTemplateError("args is not a template")
 
     @logwrap
-    def assert_exist(self, path, operation):
+    def assert_exist(self, param, operation):
+        """
+        Assert element exist.
+
+        Args:
+            operation: the method that to find the element.
+            param: the param of method.
+        Raise:
+            AssertionError - if assertion failed.
+        """
         try:
             func = self.operation_to_func[operation]
         except Exception:
-            print("There was no operation: ", operation)
-            return
+            raise AssertionError("There was no operation: %s" % operation)
         try:
-            func(path)
+            func(param)
         except Exception as e:
-            return False
-        return True
+            raise AssertionError("Target element not find.")
+
 
     @logwrap
     def get(self, address):
+        """
+        Access the web address.
+
+        Args:
+            address: the address that to accesss
+        """
         super(WebChrome, self).get(address)
         time.sleep(2)
 
     @logwrap
     def back(self):
+        """
+        Back to last page.
+        """
         super(WebChrome, self).back()
         self._gen_screen_log()
         time.sleep(1)
 
     @logwrap
     def forward(self):
+        """
+        Forward to next page.
+        """
         super(WebChrome, self).forward()
         self._gen_screen_log()
         time.sleep(1)
 
     @logwrap
-    def snapshot(self):
-        self._gen_screen_log()
+    def snapshot(self, filename=None):
+        self._gen_screen_log(filename)
 
     @logwrap
-    def _gen_screen_log(self, element=None):
+    def _gen_screen_log(self, filename=None, element=None):
         if ST.LOG_DIR is None:
             return None
+        if filename:
+            self.screenshot(filename)
         jpg_file_name = str(int(time.time())) + '.jpg'
         jpg_path = os.path.join(ST.LOG_DIR, jpg_file_name)
+        print("this is jpg path:",jpg_path)
         self.screenshot(jpg_path)
         saved = {"screen": jpg_file_name}
         if element:
