@@ -224,10 +224,10 @@ class WebChrome(Chrome):
 
     @logwrap
     def snapshot(self, filename=None):
-        self._gen_screen_log(filename)
+        self._gen_screen_log(filename=filename)
 
     @logwrap
-    def _gen_screen_log(self, filename=None, element=None):
+    def _gen_screen_log(self, element=None, filename=None,):
         if ST.LOG_DIR is None:
             return None
         if filename:
