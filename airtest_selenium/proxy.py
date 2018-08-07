@@ -151,7 +151,7 @@ class WebChrome(Chrome):
         return _pos
 
     @logwrap
-    def assert_template(self, v):
+    def assert_template(self, v, msg=""):
         """
         Assert target exists on the current page.
 
@@ -173,7 +173,7 @@ class WebChrome(Chrome):
             raise IsNotTemplateError("args is not a template")
 
     @logwrap
-    def assert_exist(self, param, operation):
+    def assert_exist(self, param, operation, msg=""):
         """
         Assert element exist.
 
