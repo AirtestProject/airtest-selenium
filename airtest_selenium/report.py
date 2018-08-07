@@ -9,7 +9,7 @@ old_trans_desc = report.LogToHtml._translate_desc
 old_trans_code = report.LogToHtml._translate_code
 
 screen_func = ["find_element_by_xpath", "find_element_by_id", "find_element_by_name", "assert_exist",
-               "back", "forward", "switch_to_new_tab", "switch_to_previous_tab", "get", "snapshot",
+               "back", "forward", "switch_to_new_tab", "switch_to_previous_tab", "get",
                "click", "send_keys"]
 
 second_screen_func = ["click", "send_keys"]
