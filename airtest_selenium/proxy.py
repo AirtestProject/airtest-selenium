@@ -251,7 +251,10 @@ class WebChrome(Chrome):
         if file_path:
             self.save_screenshot(file_path)
         else:
-            file_path = os.path.join(ST.LOG_DIR, "temp.jpg")
+            if not ST.LOG_DIR:
+                file_path = "temp.jpg"
+            else:
+                file_path = os.path.join(ST.LOG_DIR, "temp.jpg")
             self.save_screenshot(file_path)
             screen = aircv.imread(file_path)
             return screen
