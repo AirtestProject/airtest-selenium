@@ -1,5 +1,4 @@
 
-
 <html>
     <a href="http://airtest.netease.com" class="homepage-corner" aria-label="View source on Github">
         <svg width="100" height="100" viewBox="0 0 250 250" style="fill:#40c9c6; color:#fff; position: fixed; top: 0; border: 0; right: 0;" aria-hidden="true">
@@ -35,5 +34,5 @@
 Airtest-Selenium快速上手教程： http://airtest.netease.com/docs/docs_AirtestIDE-zh_CN/1_quick_start/5_get_started_with_web_test.html
 
 
-Airtest-Selenium详细文档及API:  http://airtest.netease.com/docs/docs_AirtestIDE-zh_CN/7_plugins/2_selenium.html
+Airtest-Selenium详细文档及API: http://airtest.netease.com/docs/cn/8_plugins/2_selenium.html
 
