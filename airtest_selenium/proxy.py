@@ -56,8 +56,7 @@ class WebChrome(Chrome):
                 # 超时则raise，未超时则进行下次循环:
                 if (time.time() - start_time) > timeout:
                     # try_log_screen(screen)
-                    raise NoSuchElementException(
-                        'Element %s not found in screen' % text)
+                    raise NoSuchElementException('Element %s not found in screen' % text)
                 else:
                     time.sleep(interval)
             else:
@@ -73,8 +72,7 @@ class WebChrome(Chrome):
         Returns:
             Web element of current page.
         """
-        web_element = self.loop_find_element(
-            super(WebChrome, self).find_element_by_xpath, xpath)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_xpath, xpath)
         # web_element = super(WebChrome, self).find_element_by_xpath(xpath)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
@@ -89,8 +87,7 @@ class WebChrome(Chrome):
         Returns:
             Web element of current page.
         """
-        web_element = self.loop_find_element(
-            super(WebChrome, self).find_element_by_id, id)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_id, id)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -104,8 +101,7 @@ class WebChrome(Chrome):
         Returns:
             Web element of current page.
         """
-        web_element = self.loop_find_element(
-            super(WebChrome, self).find_element_by_css_selector, css_selector)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_css_selector, css_selector)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -119,8 +115,7 @@ class WebChrome(Chrome):
         Returns:
             Web element of current page.
         """
-        web_element = self.loop_find_element(
-            super(WebChrome, self).find_element_by_name, name)
+        web_element = self.loop_find_element(super(WebChrome, self).find_element_by_name, name)
         log_res = self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -263,7 +258,7 @@ class WebChrome(Chrome):
             y = size['height'] / 2 + location['y']
             if "darwin" in sys.platform:
                 x, y = x * 2, y * 2
-            saved.update({"pos": [[x, y]], })
+            saved.update({"pos": [[x, y]]})
         return saved
 
     def screenshot(self, file_path=None):
@@ -338,8 +333,7 @@ class WebRemote(Remote):
                 # 超时则raise，未超时则进行下次循环:
                 if (time.time() - start_time) > timeout:
                     # try_log_screen(screen)
-                    raise NoSuchElementException(
-                        'Element %s not found in screen' % text)
+                    raise NoSuchElementException('Element %s not found in screen' % text)
                 else:
                     time.sleep(interval)
             else:
@@ -355,8 +349,7 @@ class WebRemote(Remote):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(WebRemote, self).find_element_by_xpath, xpath)
+        web_element=self.loop_find_element(super(WebRemote, self).find_element_by_xpath, xpath)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -370,8 +363,7 @@ class WebRemote(Remote):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(WebRemote, self).find_element_by_id, id)
+        web_element=self.loop_find_element(super(WebRemote, self).find_element_by_id, id)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -385,8 +377,7 @@ class WebRemote(Remote):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(WebRemote, self).find_element_by_css_selector, css_selector)
+        web_element=self.loop_find_element(super(WebRemote, self).find_element_by_css_selector, css_selector)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -400,8 +391,7 @@ class WebRemote(Remote):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(WebRemote, self).find_element_by_name, name)
+        web_element=self.loop_find_element(super(WebRemote, self).find_element_by_name, name)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -544,7 +534,7 @@ class WebRemote(Remote):
             y=size['height'] / 2 + location['y']
             if "darwin" in sys.platform:
                 x, y=x * 2, y * 2
-            saved.update({"pos": [[x, y]], })
+            saved.update({"pos": [[x, y]]})
         return saved
 
     def screenshot(self, file_path=None):
@@ -626,8 +616,7 @@ class WebFirefox(Firefox):
                 # 超时则raise，未超时则进行下次循环:
                 if (time.time() - start_time) > timeout:
                     # try_log_screen(screen)
-                    raise NoSuchElementException(
-                        'Element %s not found in screen' % text)
+                    raise NoSuchElementException('Element %s not found in screen' % text)
                 else:
                     time.sleep(interval)
             else:
@@ -643,8 +632,7 @@ class WebFirefox(Firefox):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(Firefox, self).find_element_by_xpath, xpath)
+        web_element=self.loop_find_element(super(Firefox, self).find_element_by_xpath, xpath)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -658,8 +646,7 @@ class WebFirefox(Firefox):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(Firefox, self).find_element_by_id, id)
+        web_element=self.loop_find_element(super(Firefox, self).find_element_by_id, id)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -673,8 +660,7 @@ class WebFirefox(Firefox):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(Firefox, self).find_element_by_css_selector, css_selector)
+        web_element=self.loop_find_element(super(Firefox, self).find_element_by_css_selector, css_selector)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -688,8 +674,7 @@ class WebFirefox(Firefox):
         Returns:
             Web element of current page.
         """
-        web_element=self.loop_find_element(
-            super(Firefox, self).find_element_by_name, name)
+        web_element=self.loop_find_element(super(Firefox, self).find_element_by_name, name)
         log_res=self._gen_screen_log(web_element)
         return Element(web_element, log_res)
 
@@ -832,7 +817,7 @@ class WebFirefox(Firefox):
             y=size['height'] / 2 + location['y']
             if "darwin" in sys.platform:
                 x, y=x * 2, y * 2
-            saved.update({"pos": [[x, y]], })
+            saved.update({"pos": [[x, y]]})
         return saved
 
     def screenshot(self, file_path=None):
