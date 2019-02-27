@@ -577,17 +577,13 @@ class WebFirefox(Firefox):
 
     def __init__(self, firefox_profile=None, firefox_binary=None,
                  timeout=30, capabilities=None, proxy=None,
-                 executable_path="geckodriver", options=None,
-                 service_log_path="geckodriver.log", firefox_options=None,
-                 service_args=None, desired_capabilities=None, log_path=None,
-                 keep_alive=True):
+                 executable_path="geckodriver", options=None, firefox_options=None,
+                 service_args=None, desired_capabilities=None, log_path=None):
         print("Please make sure your geckodriver is in your path before proceeding using this driver")
         super(WebFirefox, self).__init__(firefox_profile=firefox_profile, firefox_binary=firefox_binary,
                  timeout=timeout, capabilities=capabilities, proxy=proxy,
-                 executable_path=executable_path, options=options,
-                 service_log_path=service_log_path, firefox_options=firefox_options,
-                 service_args=service_args, desired_capabilities=desired_capabilities, log_path=log_path,
-                 keep_alive=keep_alive)
+                 executable_path=executable_path, options=options, firefox_options=firefox_options,
+                 service_args=service_args, desired_capabilities=desired_capabilities, log_path=log_path)
         self.father_number = {0: 0}
         self.action_chains = ActionChains(self)
         self.number = 0
