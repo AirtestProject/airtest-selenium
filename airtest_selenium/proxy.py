@@ -32,7 +32,7 @@ class WebChrome(Chrome):
         self.action_chains = ActionChains(self)
         self.number = 0
         self.mouse = Controller()
-        self.operation_to_func = {"xpath": self.find_element_by_xpath, "id": self.find_element_by_id,
+        self.operation_to_func = {"elementsD": self.find_any_element, "xpath": self.find_element_by_xpath, "id": self.find_element_by_id,
                                   "name": self.find_element_by_name, "css": self.find_element_by_css_selector}
 
     def loop_find_element(self, func, text, timeout=10, interval=0.5):
@@ -56,11 +56,78 @@ class WebChrome(Chrome):
                 # 超时则raise，未超时则进行下次循环:
                 if (time.time() - start_time) > timeout:
                     # try_log_screen(screen)
-                    raise NoSuchElementException('Element %s not found in screen' % text)
+                    raise NoSuchElementException(
+                        'Element %s not found in screen' % text)
                 else:
                     time.sleep(interval)
             else:
                 return element
+
+    def loop_find_element_noExc(self, func, text, timeout=3, interval=0.5):
+        """
+        Loop to find the target web element by func.
+
+        Args:
+            func: function to find element
+            text: param of function
+            timeout: time to find the element
+            interval: interval between operation
+        Returns:
+            element that been found
+        """
+        start_time=time.time()
+        while True:
+            try:
+                element=func(text)
+            except NoSuchElementException:
+                print("Element not found!")
+                # 超时则raise，未超时则进行下次循环:
+                if (time.time() - start_time) > timeout:
+                    # try_log_screen(screen)
+                    return None
+                else:
+                    time.sleep(interval)
+            else:
+                print('element found')
+                return element
+
+    @logwrap
+    def find_any_element(self, elementsD):
+        """
+        Find the web element by the indicated parameters.
+
+        Args:
+            elementsD: a dictionary with keys = by's, values=value
+        Returns:
+            Web element of current page.
+        """
+        web_element = None
+        for key in elementsD:
+            value = elementsD[key]
+            print(value)
+            if (key.upper() == 'ID'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_id, value)
+            elif(key.upper() == 'XPATH'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_xpath, value)
+            elif(key.upper() == 'CSS'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_css_selector, value)
+            elif(key.upper() == 'NAME'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_name,value)
+            elif(key.upper() == 'LINKTEXT'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_link_text, value)
+            elif(key.upper() == 'CLASSNAME'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_class_name, value)
+            elif(key.upper() == 'PARTIALLINKTEXT'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_partial_link_text, value)
+            elif(key.upper() == 'TAGNAME'):
+                web_element=self.loop_find_element_noExc(super().find_element_by_tag_name, value)                   
+            # check by position/ picture / visual testing
+            if (web_element is not None):
+                break
+        if (web_element is not None):
+            log_res=self._gen_screen_log(web_element)
+            return Element(web_element, log_res)
+        raise NoSuchElementException('Element not found in screen' )
 
     @logwrap
     def find_element_by_xpath(self, xpath):
