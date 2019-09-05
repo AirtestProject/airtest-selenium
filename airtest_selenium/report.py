@@ -25,19 +25,26 @@ def new_trans_screen(self, step, code):
             "vector": [],
             "confidence": None,
         }
+
+        src = ""
         if step["data"]["name"] in second_screen_func:
             res = step["data"]['ret']
-            screen["src"] = res["screen"]
+            src = res["screen"]
             if "pos" in res:
                 screen["pos"] = res["pos"]
 
         for item in step["__children__"]:
             if item["data"]["name"] == "_gen_screen_log":
                 res = item["data"]['ret']
-                screen["src"] = res["screen"]
+                src = res["screen"]
                 if "pos" in res:
                     screen["pos"] = res["pos"]
                 break
+
+        if self.export_dir and src:
+            src = os.path.join(LOGDIR, src)
+        screen["src"] = src
+
         return screen
     else:
         return trans
