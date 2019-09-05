@@ -10,7 +10,7 @@ def parse_requirements(filename='requirements.txt'):
 
 setup(
     name='airtest-selenium',
-    version='1.0.0',
+    version='1.0.1',
     keywords="selenium, automation test, web ui automation",
     description='Selenium with airtest test framework.',
     long_description='Selenium with airtest test framework. 2018 present by NetEase Games',
