@@ -313,11 +313,11 @@ class WebChrome(Chrome):
             return None
         if filename:
             self.screenshot(filename)
-        jpg_file_name = str(int(time.time())) + '.jpg'
-        jpg_path = os.path.join(ST.LOG_DIR, jpg_file_name)
-        print("this is jpg path:", jpg_path)
-        self.screenshot(jpg_path)
-        saved = {"screen": jpg_file_name}
+        png_file_name = str(int(time.time())) + '.png'
+        png_path = os.path.join(ST.LOG_DIR, png_file_name)
+        print("this is png path:", png_path)
+        self.screenshot(png_path)
+        saved = {"screen": png_file_name}
         if element:
             size = element.size
             location = element.location
@@ -333,9 +333,9 @@ class WebChrome(Chrome):
             self.save_screenshot(file_path)
         else:
             if not ST.LOG_DIR:
-                file_path = "temp.jpg"
+                file_path = "temp.png"
             else:
-                file_path = os.path.join(ST.LOG_DIR, "temp.jpg")
+                file_path = os.path.join(ST.LOG_DIR, "temp.png")
             self.save_screenshot(file_path)
             screen = aircv.imread(file_path)
             return screen
@@ -589,11 +589,11 @@ class WebRemote(Remote):
             return None
         if filename:
             self.screenshot(filename)
-        jpg_file_name=str(int(time.time())) + '.jpg'
-        jpg_path=os.path.join(ST.LOG_DIR, jpg_file_name)
-        print("this is jpg path:", jpg_path)
-        self.screenshot(jpg_path)
-        saved={"screen": jpg_file_name}
+        png_file_name=str(int(time.time())) + '.png'
+        png_path=os.path.join(ST.LOG_DIR, png_file_name)
+        print("this is png path:", png_path)
+        self.screenshot(png_path)
+        saved={"screen": png_file_name}
         if element:
             size=element.size
             location=element.location
@@ -609,9 +609,9 @@ class WebRemote(Remote):
             self.save_screenshot(file_path)
         else:
             if not ST.LOG_DIR:
-                file_path="temp.jpg"
+                file_path="temp.png"
             else:
-                file_path=os.path.join(ST.LOG_DIR, "temp.jpg")
+                file_path=os.path.join(ST.LOG_DIR, "temp.png")
             self.save_screenshot(file_path)
             screen=aircv.imread(file_path)
             return screen
@@ -868,11 +868,11 @@ class WebFirefox(Firefox):
             return None
         if filename:
             self.screenshot(filename)
-        jpg_file_name=str(int(time.time())) + '.jpg'
-        jpg_path=os.path.join(ST.LOG_DIR, jpg_file_name)
-        print("this is jpg path:", jpg_path)
-        self.screenshot(jpg_path)
-        saved={"screen": jpg_file_name}
+        png_file_name=str(int(time.time())) + '.png'
+        png_path=os.path.join(ST.LOG_DIR, png_file_name)
+        print("this is png path:", png_path)
+        self.screenshot(png_path)
+        saved={"screen": png_file_name}
         if element:
             size=element.size
             location=element.location
@@ -888,9 +888,9 @@ class WebFirefox(Firefox):
             self.save_screenshot(file_path)
         else:
             if not ST.LOG_DIR:
-                file_path="temp.jpg"
+                file_path="temp.png"
             else:
-                file_path=os.path.join(ST.LOG_DIR, "temp.jpg")
+                file_path=os.path.join(ST.LOG_DIR, "temp.png")
             self.save_screenshot(file_path)
             screen=aircv.imread(file_path)
             return screen
